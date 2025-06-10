@@ -1,7 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './AdminDashboard.css';
+import ResultsChart from './ResultsChart';
+import { io } from 'socket.io-client';
+
+const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 
 export default function AdminDashboard() {
   const [question, setQuestion] = useState('');
@@ -12,6 +16,8 @@ export default function AdminDashboard() {
   const [polls, setPolls] = useState([]);
   const [activeSession, setActiveSession] = useState(null);
   const [copySuccess, setCopySuccess] = useState('');
+  const [results, setResults] = useState(null);
+  const socketRef = useRef(null);
   const navigate = useNavigate();
 
   const fetchPolls = useCallback(async () => {
@@ -22,7 +28,6 @@ export default function AdminDashboard() {
         return;
       }
 
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
       console.log('API URL:', apiUrl); // Debug log
 
       const response = await axios.get(`${apiUrl}/api/poll/history`, {
@@ -41,6 +46,23 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchPolls();
   }, [fetchPolls]);
+
+  useEffect(() => {
+    if (!activeSession) return;
+    if (!socketRef.current) {
+      socketRef.current = io(apiUrl, {
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000
+      });
+    }
+    const socket = socketRef.current;
+    socket.emit('joinSession', { code: activeSession.code, user: 'admin' });
+    socket.on('updateResults', setResults);
+    return () => {
+      socket.off('updateResults', setResults);
+    };
+  }, [activeSession]);
 
   const handleAddOption = () => {
     setOptions([...options, '']);
@@ -84,7 +106,6 @@ export default function AdminDashboard() {
         return;
       }
 
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
       console.log('API URL:', apiUrl); // Debug log
 
       // Create the poll
@@ -153,7 +174,6 @@ export default function AdminDashboard() {
     }
 
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
       console.log('Starting session with API URL:', apiUrl);
       
       const response = await axios.post(
@@ -188,7 +208,6 @@ export default function AdminDashboard() {
         return;
       }
 
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
       console.log('Ending session for poll:', pollId); // Debug log
 
       const response = await axios.post(
@@ -211,7 +230,6 @@ export default function AdminDashboard() {
                           err.response?.data?.message || 
                           'Failed to end session';
       setError(errorMessage);
-      
       // If the session is already ended or not found, clear the active session
       if (err.response?.status === 404) {
         setActiveSession(null);
@@ -266,6 +284,10 @@ export default function AdminDashboard() {
               </button>
             </div>
             <p className="session-instructions">Share this code with participants to join the poll</p>
+          </div>
+          <div className="live-results-section" style={{ margin: '2rem 0' }}>
+            <h3 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Live Results</h3>
+            <ResultsChart options={polls.find(p => p._id === activeSession.pollId)?.options || []} results={results} />
           </div>
           <button 
             className="end-session-btn"
@@ -350,8 +372,8 @@ export default function AdminDashboard() {
         {polls.length === 0 ? (
           <p>No polls found</p>
         ) : (
-          <div className="polls-grid">
-        {polls.map(poll => (
+          <div className="polls-flex">
+            {polls.map(poll => (
               <div key={poll._id} className="poll-card">
                 <h4>{poll.question}</h4>
                 <p>Status: {poll.status}</p>
@@ -367,8 +389,8 @@ export default function AdminDashboard() {
                 )}
               </div>
             ))}
-        </div>
-      )}
+          </div>
+        )}
       </div>
     </div>
   );
