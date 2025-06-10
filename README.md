@@ -1,17 +1,17 @@
 # Live Polling App
 
-A full-stack web application for creating, managing, and participating in live polls. Includes an admin dashboard, user (voter) interface, real-time results, and session management.
+A full-stack web application for creating, managing, and participating in live polls. Features an admin dashboard, user (voter) interface, real-time results, and secure session management.
 
 ## Features
-- Admin dashboard for poll management
-- User join page for poll participation
+- Admin dashboard for poll creation and management
+- User interface for joining and participating in polls
 - Real-time voting and results (Socket.io)
 - Secure authentication (JWT)
 - Responsive, modern UI
 
 ## Project Structure
 ```
-/Backend    # Node.js/Express backend (API, DB, auth, sockets)
+/Backend    # Node.js/Express backend (API, DB, authentication, sockets)
 /Frontend   # React frontend (UI, charts, routing)
 ```
 
@@ -58,7 +58,7 @@ A full-stack web application for creating, managing, and participating in live p
 ---
 
 ## Usage
-- **Admin:** Register/login as admin to create and manage polls, start/end sessions, and view results.
+- **Admin:** Register or log in to create and manage polls, start/end sessions, and view results.
 - **User/Voter:** Join a poll session using the session code, enter your name, and vote in real time.
 
 ## Scripts
@@ -73,8 +73,8 @@ A full-stack web application for creating, managing, and participating in live p
 ---
 
 ## Customization
-- **Background Images:** You can change background images in the CSS files in `Frontend/src/components/` for each page.
-- **API URLs:** If you deploy the backend separately, update API URLs in the frontend accordingly.
+- **Background Images:** Update background images in the CSS files in `Frontend/src/components/` as needed.
+- **API URLs:** If deploying the backend separately, update API URLs in the frontend configuration.
 
 ## License
-This project is for educational/demo purposes. 
+This project is intended for company submission and internal use.
