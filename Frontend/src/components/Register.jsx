@@ -46,7 +46,7 @@ export default function Register() {
     
     setIsLoading(true);
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+      const apiUrl = "https://zapvote.onrender.com";
       console.log('API URL:', apiUrl); // Debug log
       
       const response = await axios.post(

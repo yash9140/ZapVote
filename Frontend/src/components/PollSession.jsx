@@ -4,7 +4,7 @@ import { io } from 'socket.io-client';
 import axios from 'axios';
 import ResultsChart from './ResultsChart';
 
-const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+const apiUrl = "https://zapvote.onrender.com";
 const socket = io(apiUrl, {
   reconnection: true,
   reconnectionAttempts: 5,

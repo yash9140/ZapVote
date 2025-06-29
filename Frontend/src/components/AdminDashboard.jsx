@@ -5,7 +5,7 @@ import './AdminDashboard.css';
 import ResultsChart from './ResultsChart';
 import { io } from 'socket.io-client';
 
-const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+const apiUrl = "https://zapvote.onrender.com";
 
 export default function AdminDashboard() {
   const [question, setQuestion] = useState('');
